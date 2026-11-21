@@ -116,7 +116,9 @@ class EndpointTracker {
 
         var upgradedPos: Vec3? = null
         if (observations.size >= MIN_UPGRADE_VIEWS) {
-            val tri = Triangulator.triangulate(observations, depthPrior, STRICT_TRIANGULATION_CONFIG)
+            // Once we have >= 4 sub-pixel tracked views spanning >= 8 deg parallax, triangulate
+            // purely from rays (depthPrior = null) so monocular depth bias cannot pull the result.
+            val tri = Triangulator.triangulate(observations, depthPrior = null, config = STRICT_TRIANGULATION_CONFIG)
             if (tri is TriangulationResult.Success &&
                 tri.point.inlierCount >= MIN_UPGRADE_VIEWS &&
                 tri.point.position.distanceTo(seed) <= MAX_REFINEMENT_SHIFT_METERS
@@ -133,8 +135,8 @@ class EndpointTracker {
         private const val MAX_OBSERVATIONS = 20
         private const val MIN_UPGRADE_VIEWS = 4
         private const val MIN_UPGRADE_PARALLAX_DEG = 8.0
-        private const val MAX_UPGRADE_RMS_PX = 1.5
-        private const val MAX_REFINEMENT_SHIFT_METERS = 0.12
+        private const val MAX_UPGRADE_RMS_PX = 1.25
+        private const val MAX_REFINEMENT_SHIFT_METERS = 0.25
 
         private val FRAME_TRACK_CONFIG = TrackerConfig(
             patchRadiusPx = 7,

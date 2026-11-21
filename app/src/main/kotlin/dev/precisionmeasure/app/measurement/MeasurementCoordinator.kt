@@ -142,13 +142,16 @@ class MeasurementCoordinator(
         surfaceSource: SurfaceSource,
         torchEnabled: Boolean,
         rawDepthEnabled: Boolean,
+        centerDepthMm: Int = 0,
         trackingHint: String? = null,
     ) {
         _uiState.update { state ->
             val msg = if (state.activeVertexCount == 0 && state.mode != MeasurementMode.LEVEL) {
                 when {
-                    !isTracking -> trackingHint ?: "Initializing AR tracking — move phone gently"
+                    !isTracking -> trackingHint ?: "Initializing AR tracking: move phone gently"
                     surfaceSource == SurfaceSource.NONE -> "Aim at a textured surface and move slightly"
+                    surfaceSource != SurfaceSource.PLANE && centerDepthMm in 1..280 ->
+                        "Too close: pull back slightly (~30 cm) to lock surface"
                     else -> defaultPromptFor(state.mode, 0, surfaceLocked = true)
                 }
             } else {

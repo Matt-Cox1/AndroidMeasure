@@ -247,6 +247,7 @@ class ArMeasurementEngine(
             surfaceSource = hitSource,
             torchEnabled = torchEnabled,
             rawDepthEnabled = depthApiSupported,
+            centerDepthMm = surfaceHit?.centerDepthMm ?: 0,
         )
 
         if (depthApiSupported && devOpts.depthMapMode != DepthMapOverlayMode.OFF) {
@@ -565,7 +566,7 @@ class ArMeasurementEngine(
                     completedAnchorGroups.add(activeAnchors.toMutableList())
                     activeAnchors.clear()
                 }
-                activeAnchors.add(createAnchorAt(arSession, hit.worldPoint))
+                activeAnchors.add(createAnchorForHit(arSession, hit))
                 coordinator.onVertexPlaced(keyframe, reticleImgPixel, hit.depthPrior, hit.worldPoint)
             }
             MeasurementMode.PERIMETER -> {
@@ -574,12 +575,12 @@ class ArMeasurementEngine(
                     completedAnchorGroups.add(activeAnchors.toMutableList())
                     activeAnchors.clear()
                 } else {
-                    activeAnchors.add(createAnchorAt(arSession, hit.worldPoint))
+                    activeAnchors.add(createAnchorForHit(arSession, hit))
                 }
                 coordinator.onVertexPlaced(null, reticleImgPixel, hit.depthPrior, hit.worldPoint, closeLoop)
             }
             MeasurementMode.BOX -> {
-                activeAnchors.add(createAnchorAt(arSession, hit.worldPoint))
+                activeAnchors.add(createAnchorForHit(arSession, hit))
                 if (activeAnchors.size == 4) {
                     val pts = activeAnchors.map { anchorToVec3(it) }
                     val valid = try {
@@ -598,7 +599,7 @@ class ArMeasurementEngine(
                 coordinator.onVertexPlaced(null, reticleImgPixel, hit.depthPrior, hit.worldPoint)
             }
             MeasurementMode.ANGLE -> {
-                activeAnchors.add(createAnchorAt(arSession, hit.worldPoint))
+                activeAnchors.add(createAnchorForHit(arSession, hit))
                 if (activeAnchors.size == 3) {
                     val pts = activeAnchors.map { anchorToVec3(it) }
                     if (pts[0].distanceTo(pts[1]) > 1e-4 && pts[2].distanceTo(pts[1]) > 1e-4) {
@@ -611,7 +612,7 @@ class ArMeasurementEngine(
                 coordinator.onVertexPlaced(null, reticleImgPixel, hit.depthPrior, hit.worldPoint)
             }
             MeasurementMode.HEIGHT -> {
-                activeAnchors.add(createAnchorAt(arSession, hit.worldPoint))
+                activeAnchors.add(createAnchorForHit(arSession, hit))
                 if (activeAnchors.size == 2) {
                     completedAnchorGroups.add(activeAnchors.toMutableList())
                     activeAnchors.clear()
@@ -619,6 +620,17 @@ class ArMeasurementEngine(
                 coordinator.onVertexPlaced(null, reticleImgPixel, hit.depthPrior, hit.worldPoint)
             }
             MeasurementMode.LEVEL -> Unit
+        }
+    }
+
+    private fun createAnchorForHit(arSession: Session, hit: SurfaceHit): Anchor {
+        // Attach directly to the ARCore Plane/Point trackable whenever available so pins stay
+        // physically tethered as ARCore refines surface elevation.
+        val hitResult = hit.hitResult
+        return if (hitResult != null && hit.snapKind == SnapTargetKind.NONE) {
+            hitResult.createAnchor()
+        } else {
+            createAnchorAt(arSession, hit.worldPoint)
         }
     }
 
