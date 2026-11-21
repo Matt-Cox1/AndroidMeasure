@@ -1,6 +1,15 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
+}
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
 }
 
 android {
@@ -20,10 +29,36 @@ android {
         resValue("string", "feedback_email", "feedback@androidmeasure.app")
     }
 
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                val storeFilePath = requireNotNull(keystoreProperties.getProperty("storeFile")) {
+                    "keystore.properties is missing storeFile"
+                }
+                val storePass = requireNotNull(keystoreProperties.getProperty("storePassword")) {
+                    "keystore.properties is missing storePassword"
+                }
+                val alias = requireNotNull(keystoreProperties.getProperty("keyAlias")) {
+                    "keystore.properties is missing keyAlias"
+                }
+                val keyPass = requireNotNull(keystoreProperties.getProperty("keyPassword")) {
+                    "keystore.properties is missing keyPassword"
+                }
+                storeFile = file(storeFilePath)
+                storePassword = storePass
+                keyAlias = alias
+                keyPassword = keyPass
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
