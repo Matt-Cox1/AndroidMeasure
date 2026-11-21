@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Subtle reticle framing brackets -->
+    <path
+        android:pathData="M28,37 L28,28 L37,28 M71,28 L80,28 L80,37 M80,71 L80,80 L71,80 M37,80 L28,80 L28,71"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeColor="#4DFFFFFF" />
+
+    <!-- Soft glow behind main caliper beam -->
+    <path
+        android:pathData="M34,74 L74,34"
+        android:strokeWidth="8.5"
+        android:strokeLineCap="round"
+        android:strokeColor="#2A00E5FF" />
+
+    <!-- Main 3D caliper measurement line -->
+    <path
+        android:pathData="M34,74 L74,34"
+        android:strokeWidth="4.2"
+        android:strokeLineCap="round"
+        android:strokeColor="#00E5FF" />
+
+    <!-- Perpendicular ruler ticks along the diagonal beam -->
+    <path
+        android:pathData="M42,66 L45.5,69.5 M48,60 L53,65 M54,54 L59.5,59.5 M60,48 L65,53 M66,42 L69.5,45.5"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeColor="#E6FFFFFF" />
+
+    <!-- End-cap caliper jaws -->
+    <path
+        android:pathData="M29.5,69.5 L38.5,78.5 M69.5,29.5 L78.5,38.5"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeColor="#FFFFFF" />
+
+    <!-- Point A anchor pin (emerald) -->
+    <path
+        android:pathData="M34,74 m-6.5,0 a6.5,6.5 0 1,0 13,0 a6.5,6.5 0 1,0 -13,0"
+        android:fillColor="#0B1220" />
+    <path
+        android:pathData="M34,74 m-4.6,0 a4.6,4.6 0 1,0 9.2,0 a4.6,4.6 0 1,0 -9.2,0"
+        android:fillColor="#00E676" />
+
+    <!-- Point B anchor pin (gold) -->
+    <path
+        android:pathData="M74,34 m-6.5,0 a6.5,6.5 0 1,0 13,0 a6.5,6.5 0 1,0 -13,0"
+        android:fillColor="#0B1220" />
+    <path
+        android:pathData="M74,34 m-4.6,0 a4.6,4.6 0 1,0 9.2,0 a4.6,4.6 0 1,0 -9.2,0"
+        android:fillColor="#FFD600" />
+</vector>
